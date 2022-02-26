@@ -9,5 +9,20 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  monospace;
+}
+.true{
+  border: 3px solid #198754;
+} 
+.card{
+  min-height: 130px;
+}
+.row{
+ box-shadow: px ; 
+}
+h5{
+  min-height: 50px;
+}
+p{
+  min-height: 50px;
 }
