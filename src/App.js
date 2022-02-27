@@ -17,13 +17,35 @@ class Idee extends Component {
     nombreChar: 0
   }
 
+  worlCompt = () => {
+    var cmpt = this.state.nombreChar
+    
+    return this.setState({
+      nombreChar: ++cmpt
+    });
 
-  compWolrd(value){
+    // nbre = nbre+1
 
-  }
+    // this.setState({
+    //   nombreChar: nbre
+    // })
+  } 
 
-  validateForm() {
-    return this.state.title.length > 0 && this.state.description.length > 0;
+
+  deleteIdee = id =>{
+    // alert('delete :'+ id)
+  } 
+
+  validateForm = () => {
+    const newIdee = this.state.allIdees.slice();
+    newIdee.unshift({
+      title: 'Une idée de zall',
+      description: 'Juste une petite description de cette idée',
+      approuve:0
+    });
+    this.setState({
+      allIdees: newIdee
+    })
   }
   
   async saveIdee(){
@@ -41,6 +63,8 @@ class Idee extends Component {
       alert(this.state.title)
     }
   }
+
+  
     
   async componentDidMount(){
     const idees = await axios.get('http://127.0.0.1:8000/api/idees');
@@ -71,7 +95,7 @@ class Idee extends Component {
                 <h5 className="card-title">{item.title}</h5>
                 <p className="card-text">{item.description}</p>
                 <a href="#" className="btn btn-primary mx-1">approuver</a>
-                <a href="#" className="btn btn-danger mx-2">supprimer</a>
+                <a href="#" className="btn btn-danger mx-1" onClick={this.deleteIdee(1)}>supprimer</a>
               </div>
             </div>
           </div>
@@ -84,13 +108,13 @@ class Idee extends Component {
       <h1 className="text-center">Boite à idées</h1>
         <div className="row my-5">
           <div className="col-6 mt-5">
-            <Form onSubmit={this.saveIdee()}>
+            <Form onSubmit={this.validateForm}>
               <Form.Group controlId="title" >
                 <Form.Control
                   className="py-3"
                   placeholder="Titre idée"
                   type="text"
-                  defaultValue={this.state.title}
+                  value={this.state.title}
                 />
               </Form.Group>
               <Form.Group controlId="description" >
@@ -98,7 +122,8 @@ class Idee extends Component {
                   className="mt-4 py-5"
                   placeholder="Description"
                   as="textarea"
-                  defaultValue={this.state.description}
+                  onChange={this.worlCompt}
+                  value={this.state.description}
                   />
               </Form.Group>
                 <strong  className="">Nombre de caratères : </strong> <span  id="wc">{this.state.nombreChar}</span> <br/>
