@@ -1,76 +1,110 @@
-import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import Form from 'react-bootstrap/Form'
-import {Link} from 'react-router-dom'
 import React, { Component } from "react";
-import "./App.css";
+import axios from "axios";
 
-import photo from "./photo.svg"
+import "./App.css";
+import image from "./photo.svg"
 
 
 class Idee extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      title: "",
-      description: "",
-      nombreWolrd: 0
-    };
+  
+  state={
+    allIdees:[],
+    loading:false,
+    title: "",
+    description: "",
+    nombreChar: 0
   }
 
-  compWolrd(event){
-    let nombre = 1
-    let wc = document.getElementById('wc');
-    wc.addEventListener('keydown', ()=>{
-     alert('k') 
 
-    })
-    // this.setState({
-    //   [event.target.id]: event.target.value
-    // });
+  compWolrd(value){
+
   }
+
   validateForm() {
     return this.state.title.length > 0 && this.state.description.length > 0;
   }
-  handleChange = event => {
+  
+  async saveIdee(){
+    const res =  await axios.post('http://127.0.0.1:8000/api/new-idee', this.state);
+
+    //on versifie si le données ont été bien insérées
+
+    if (res.data.status === 200) {
+      console.log(res.data.message);
+      
+      this.setState({
+        title: "",
+        description: ""
+      });
+      alert(this.state.title)
+    }
+  }
     
+  async componentDidMount(){
+    const idees = await axios.get('http://127.0.0.1:8000/api/idees');
+    console.log(idees);
+    if(idees.data.status === 200){
+      this.setState({
+        allIdees: idees.data.idees,
+        loading: true
+      });
+      // alert(this.state.allIdees);
+    }    
   }
-
-  handleSubmit = event => {
-    event.preventDefault();
-    alert('ok')
-  }
-
+  
   render() {
+
+    var idees_HTML = "";
+
+    if(this.state.loading !=true){
+      idees_HTML = <div className="row"> Chargement...</div>
+    }
+    else{
+      idees_HTML = 
+      this.state.allIdees.map((item) =>{
+        return(
+          <div className="col-sm-3">
+            <div className="card">
+              <div className="card-body">
+                <h5 className="card-title">{item.title}</h5>
+                <p className="card-text">{item.description}</p>
+                <a href="#" className="btn btn-primary mx-1">approuver</a>
+                <a href="#" className="btn btn-danger mx-2">supprimer</a>
+              </div>
+            </div>
+          </div>
+        )
+      });
+    }
+
    return(
-    <div className="container" >
+      <div className="container" >
       <h1 className="text-center">Boite à idées</h1>
         <div className="row my-5">
           <div className="col-6 mt-5">
-            <Form onSubmit={this.handleSubmit}>
-              <Form.Group controlId="title" bsSize="large">
+            <Form onSubmit={this.saveIdee()}>
+              <Form.Group controlId="title" >
                 <Form.Control
                   className="py-3"
                   placeholder="Titre idée"
                   type="text"
-                 
-                  
+                  defaultValue={this.state.title}
                 />
               </Form.Group>
-              <Form.Group controlId="description" bsSize="large">
+              <Form.Group controlId="description" >
                 <Form.Control
                   className="mt-4 py-5"
                   placeholder="Description"
-                 
                   as="textarea"
-                  onChange={this.compWolrd}
-                />
+                  defaultValue={this.state.description}
+                  />
               </Form.Group>
-                <strong  className="text-end">Nombre de caratères : </strong> <span id="wc">0</span> <br/>
+                <strong  className="">Nombre de caratères : </strong> <span  id="wc">{this.state.nombreChar}</span> <br/>
               <Button
               className="mt-3"
                 block
-                bsSize="large"
                 type="submit"
               >
                 Ajouter
@@ -78,10 +112,14 @@ class Idee extends Component {
             </Form>
             </div>
             <div className="col-5">
-                <img src={photo}/>
+                <img src={image} width="480"/>
             </div>
         </div>
+        <div className="row mt-5">
+              {idees_HTML}
+        </div>
     </div>
+    
     )
   }
 }
