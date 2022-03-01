@@ -18,22 +18,10 @@ class Idee extends Component {
   }
 
 
-  compWolrd(value){
+  // async saveIdee(){
+  //   const res =  await axios.post('http://127.0.0.1:8000/api/new-idee', this.state);
 
-  }
-
-  async saveIdee(){
-    const res =  await axios.post('http://127.0.0.1:8000/api/new-idee', this.state);
-
-    //on versifie si le données ont été bien insérées
-    if (res.data.status === 200) {      
-      this.setState({
-        title: "",
-        description: ""
-      });
-      alert(this.state.title)
-    }
-  }
+  // }
 
   async componentDidMount(){
     const idees = await axios.get('http://127.0.0.1:8000/api/idees');
@@ -45,6 +33,14 @@ class Idee extends Component {
       });
       // alert(this.state.allIdees);
     }    
+  }
+
+ 
+  comptWprdl = () =>{
+    var cmpt = this.state.nombreChar
+    return this.setState({
+          nombreChar: ++cmpt
+    });
   }
 
   validateForm = (e) => {
@@ -59,14 +55,23 @@ class Idee extends Component {
       approuve:0
     });
 
-    //on insert dans la base de données
-
-
     //on met à jour le state
     this.setState({
       allIdees: newIdee
     })
+    alert(newIdee[0].title);
+
+    //Puis j'insert dans la base de données
+
+    fetch('http://127.0.0.1:8000/api/new-idee',{
+      method: "POST",
+      headers: {
+          'Content-Type': "application/json", 
+      },
+      body: JSON.stringify(newIdee[0]),
+    })
   }
+
   
   render() {
     var idees_HTML = "";
@@ -78,7 +83,7 @@ class Idee extends Component {
       idees_HTML = 
       this.state.allIdees.map((item) =>{
         return(
-          <div className="col-sm-3">
+          <div className="col-sm-3 my-3">
             <div className="card">
               <div className="card-body">
                 <h5 className="card-title">{item.title}</h5>
@@ -110,6 +115,7 @@ class Idee extends Component {
                   className="mt-4 py-5"
                   placeholder="Description"
                   as="textarea"
+                  onChange={this.comptWprdl}
                   />
               </Form.Group>
                 <strong  className="">Nombre de caratères : </strong> <span  id="wc">{this.state.nombreChar}</span> <br/>
