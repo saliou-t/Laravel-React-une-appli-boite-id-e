@@ -17,45 +17,16 @@ class Idee extends Component {
     nombreChar: 0
   }
 
-  worlCompt = () => {
-    var cmpt = this.state.nombreChar
-    
-    return this.setState({
-      nombreChar: ++cmpt
-    });
 
-    // nbre = nbre+1
+  compWolrd(value){
 
-    // this.setState({
-    //   nombreChar: nbre
-    // })
-  } 
-
-
-  deleteIdee = id =>{
-    // alert('delete :'+ id)
-  } 
-
-  validateForm = () => {
-    const newIdee = this.state.allIdees.slice();
-    newIdee.unshift({
-      title: 'Une idée de zall',
-      description: 'Juste une petite description de cette idée',
-      approuve:0
-    });
-    this.setState({
-      allIdees: newIdee
-    })
   }
-  
+
   async saveIdee(){
     const res =  await axios.post('http://127.0.0.1:8000/api/new-idee', this.state);
 
     //on versifie si le données ont été bien insérées
-
-    if (res.data.status === 200) {
-      console.log(res.data.message);
-      
+    if (res.data.status === 200) {      
       this.setState({
         title: "",
         description: ""
@@ -64,8 +35,6 @@ class Idee extends Component {
     }
   }
 
-  
-    
   async componentDidMount(){
     const idees = await axios.get('http://127.0.0.1:8000/api/idees');
     console.log(idees);
@@ -77,9 +46,29 @@ class Idee extends Component {
       // alert(this.state.allIdees);
     }    
   }
+
+  validateForm = (e) => {
+    e.preventDefault()
+    const newTitle = e.target.title.value
+    const newDesc = e.target.description.value
+
+    const newIdee = this.state.allIdees.slice();
+    newIdee.unshift({
+      title: newTitle,
+      description: newDesc,
+      approuve:0
+    });
+
+    //on insert dans la base de données
+
+
+    //on met à jour le state
+    this.setState({
+      allIdees: newIdee
+    })
+  }
   
   render() {
-
     var idees_HTML = "";
 
     if(this.state.loading !=true){
@@ -95,7 +84,7 @@ class Idee extends Component {
                 <h5 className="card-title">{item.title}</h5>
                 <p className="card-text">{item.description}</p>
                 <a href="#" className="btn btn-primary mx-1">approuver</a>
-                <a href="#" className="btn btn-danger mx-1" onClick={this.deleteIdee(1)}>supprimer</a>
+                <a href="#" className="btn btn-danger mx-1">supprimer</a>
               </div>
             </div>
           </div>
@@ -114,7 +103,6 @@ class Idee extends Component {
                   className="py-3"
                   placeholder="Titre idée"
                   type="text"
-                  value={this.state.title}
                 />
               </Form.Group>
               <Form.Group controlId="description" >
@@ -122,8 +110,6 @@ class Idee extends Component {
                   className="mt-4 py-5"
                   placeholder="Description"
                   as="textarea"
-                  onChange={this.worlCompt}
-                  value={this.state.description}
                   />
               </Form.Group>
                 <strong  className="">Nombre de caratères : </strong> <span  id="wc">{this.state.nombreChar}</span> <br/>
