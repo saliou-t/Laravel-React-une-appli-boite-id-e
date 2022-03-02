@@ -17,11 +17,7 @@ class Idee extends Component {
     nombreChar: 0
   }
 
-
-  // async saveIdee(){
-  //   const res =  await axios.post('http://127.0.0.1:8000/api/new-idee', this.state);
-
-  // }
+ 
 
   async componentDidMount(){
     const idees = await axios.get('http://127.0.0.1:8000/api/idees');
@@ -31,16 +27,39 @@ class Idee extends Component {
         allIdees: idees.data.idees,
         loading: true
       });
-      // alert(this.state.allIdees);
     }    
   }
-
  
   comptWprdl = () =>{
     var cmpt = this.state.nombreChar
     return this.setState({
           nombreChar: ++cmpt
     });
+  }
+
+  insertIntoDB(objet){
+
+    
+  }
+
+  removeIdee = (e, id) =>{
+    e.preventDefault();
+    const element = e.currentTarget
+    element.innerHTML = "Suppression..."
+    
+    const idees = this.state.allIdees.slice();
+    const index = idees.findIndex(function(item){
+      return item.id === id
+    })
+
+    idees.splice(index, 1)
+    this.setState({allIdees: idees});
+    
+    fetch(`http://127.0.0.1:8000/api/delete/+${id}`,{
+      method: "DELETE",
+    })
+      
+    element.closest(".col").delete()
   }
 
   validateForm = (e) => {
@@ -59,10 +78,6 @@ class Idee extends Component {
     this.setState({
       allIdees: newIdee
     })
-    alert(newIdee[0].title);
-
-    //Puis j'insert dans la base de données
-
     fetch('http://127.0.0.1:8000/api/new-idee',{
       method: "POST",
       headers: {
@@ -89,7 +104,7 @@ class Idee extends Component {
                 <h5 className="card-title">{item.title}</h5>
                 <p className="card-text">{item.description}</p>
                 <a href="#" className="btn btn-primary mx-1">approuver</a>
-                <a href="#" className="btn btn-danger mx-1">supprimer</a>
+                <a href="#" className="btn btn-danger mx-1" onClick={(e) =>this.removeIdee(e,item.id)}>supprimer</a>
               </div>
             </div>
           </div>
